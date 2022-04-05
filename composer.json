@@ -1,0 +1,22 @@
+{
+    "name": "xiaoqing/payment",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "xiaoqing",
+            "email": "635265039@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "symfony/http-foundation": "4.4.x-dev",
+        "guzzlehttp/guzzle": "6.5.x-dev",
+        "monolog/monolog": "^2.0@beta",
+        "symfony/var-dumper": "4.4.x-dev"
+    },
+    "autoload":{
+        "psr-4":{
+            "Payment\\":"src/"
+        }
+    }
+}
