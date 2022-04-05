@@ -15,7 +15,7 @@ $config=[
 ];
 $order=[
     'out_trade_no'=>uniqid(),
-    'total_fee'=>101,
+    'total_fee'=>1011,
     'type'=>'mini'
 ];
 var_dump(Payment::wechat($config)->refund($order));exit;

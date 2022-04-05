@@ -1,5 +1,6 @@
 <?php
 namespace Payment;
+use Payment\Exception\InvalidGatewayException;
 use Payment\Support\Config;
 class Payment{
     private $config;
@@ -22,7 +23,7 @@ class Payment{
         if(class_exists($gateway)){
             return self::makePayment($gateway);
         }
-        var_dump(111);exit;
+        throw new InvalidGatewayException("Gateway [{$method}] Not Exists");
     }
     protected function makePayment($gateway){
         return $app = new $gateway($this->config);

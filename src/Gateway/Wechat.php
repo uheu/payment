@@ -1,5 +1,7 @@
 <?php
 namespace Payment\Gateway;
+use Payment\Exception\InvalidGatewayException;
+use Payment\Exception\InvalidSignException;
 use Symfony\Component\HttpFoundation\Request;
 use Payment\Gateway\Wechat\Support;
 use Payment\Support\Collection;
@@ -67,7 +69,7 @@ class Wechat{
         if(class_exists($gateway)){
             return self::makePayment($gateway);
         }
-        var_dump(1234);
+        throw new InvalidGatewayException("Pay Gateway [{$gateway}] Not Exists");
     }
 
     public function makePayment($gateway){
@@ -97,6 +99,6 @@ class Wechat{
         if ($refund || Support::generateSign($data) === $data['sign']) {
             return new Collection($data);
         }
-        var_dump(456);
+        throw new InvalidSignException('Wechat Sign Verify FAILED', $data);
     }
 }

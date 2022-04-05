@@ -1,6 +1,10 @@
 <?php
 namespace Payment\Gateway\Wechat;
 use Payment\Support\Traits\HasHttpRequest;
+use Payment\Exception\InvalidArgumentException;
+use Payment\Exception\InvalidSignException;
+use Payment\Exception\BusinessException;
+use Payment\Exception\GatewayException;
 use Payment\Support\Collection;
 use Payment\Gateway\Wechat;
 class Support{
@@ -62,11 +66,10 @@ class Support{
         return $type;
     }
 
-    public static function getInstance()
-    {
-    //     // if (is_null(self::$instance)) {
-    //     //     throw new InvalidArgumentException('You Should [Create] First Before Using');
-    //     // }
+    public static function getInstance(){
+        if (is_null(self::$instance)) {
+            throw new InvalidArgumentException('You Should [Create] First Before Using');
+        }
 
         return self::$instance;
     }
@@ -131,20 +134,19 @@ class Support{
 
     protected static function processingApiResult($endpoint, array $result){
         if (!isset($result['return_code']) || 'SUCCESS' != $result['return_code']) {
-            // throw new GatewayException('Get Wechat API Error:'.($result['return_msg'] ?? $result['retmsg'] ?? ''), $result);
+            throw new GatewayException('Get Wechat API Error:'.($result['return_msg'] ?? $result['retmsg'] ?? ''), $result);
         }
 
         if (isset($result['result_code']) && 'SUCCESS' != $result['result_code']) {
-            // throw new BusinessException('Wechat Business Error: '.$result['err_code'].' - '.$result['err_code_des'], $result);
+            throw new BusinessException('Wechat Business Error: '.$result['err_code'].' - '.$result['err_code_des'], $result);
         }
         if ('pay/getsignkey' === $endpoint ||
             false !== strpos($endpoint, 'mmpaymkttransfers') ||
             self::generateSign($result) === $result['sign']) {
             return new Collection($result);
         }
-        var_dump(111);exit;
         //Events::dispatch(new Events\SignFailed('Wechat', '', $result));
-        //throw new InvalidSignException('Wechat Sign Verify FAILED', $result);
+        throw new InvalidSignException('Wechat Sign Verify FAILED', $result);
     }
 
     /**
@@ -153,9 +155,9 @@ class Support{
      * 数组转换成xml格式
      */
     public static function toXml($data){
-        // if (!is_array($data) || count($data) <= 0) {
-             // throw new InvalidArgumentException('Convert To Xml Error! Invalid Array!');
-         //}
+        if (!is_array($data) || count($data) <= 0) {
+             throw new InvalidArgumentException('Convert To Xml Error! Invalid Array!');
+         }
         
         $xml = '<xml>';
         foreach($data as $key => $val){
@@ -171,9 +173,9 @@ class Support{
      * xml格式转换成数组
      */
     public static function fromXml($xml): array{
-        // if (!$xml) {
-        //     throw new InvalidArgumentException('Convert To Array Error! Invalid Xml!');
-        // }
+        if (!$xml) {
+            throw new InvalidArgumentException('Convert To Array Error! Invalid Xml!');
+        }
 
         //判断当前的php版本是否小于8 如70405代表7.45
         if (\PHP_VERSION_ID < 80000) {
